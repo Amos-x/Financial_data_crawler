@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 import time
 from bs4 import BeautifulSoup
 from Data.items import DataItem
@@ -12,50 +8,27 @@ import re
 class CzcespiderSpider(scrapy.Spider):
     name = 'czceSpider'
     # allowed_domains = ['www.czce.com.cn']
-    start_urls = ['http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm']
-    url = 'http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm'
+    # start_urls = ['http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm']
+    url = 'http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm/'
+    today_time = time.time()
+    custom_settings = {'DOWNLOADER_MIDDLEWARES': {'Data.middlewares.SeleniumMiddleware': 1}}
 
-    def __init__(self):
-        scrapy.Spider.__init__(self)
-        self.browser = webdriver.Chrome()
-        self.wait = WebDriverWait(self.browser,10)
-        self.today_time = time.time()
-
-    def spider_close(self):
-        self.browser.quit()
-
-    def parse(self, response):
-        self.browser.get(self.url)
-        input_window = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR,'table tbody input#pubDate')))
-        button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'table tbody img#button')))
-        start_time = 1104508800.0 +57600     #1072886400.0 + 57600
+    def start_requests(self):
+        start_time = 1388678400.0 + 57600  #1072886400.0 + 57600
         while start_time < self.today_time:
             datetime = time.strftime('%Y-%m-%d',time.localtime(start_time))
-            input_window.clear()
-            input_window.send_keys(datetime)
-            button.click()
-            handles = self.browser.window_handles
-            self.browser.switch_to_window(handles[-1])
-            html = self.browser.page_source
-            self.html_parse(html=html,time=datetime)
-
-            print('- ',datetime)
-            self.browser.close()
-            self.browser.switch_to_window(handles[0])
+            yield scrapy.Request(self.url+datetime,meta={'time':datetime},callback=self.html_parse)
             start_time += 86400
 
-
-    def html_parse(self,html,time):
-        print('1')
-        soup = BeautifulSoup(html,'lxml')
-        tr_list = soup.select('table tbody tr')
-        if tr_list:
-            print('2')
+    def html_parse(self,response):
+        soup = BeautifulSoup(response.text,'lxml')
+        tr_list = soup.select('table')[-1].select('tr')
+        if len(tr_list)>1:
             item = DataItem()
             type_name =''
             for tr in tr_list[1:]:
                 td_list = [td.get_text().strip() for td in tr.select('td')]
-                item['time'] = time
+                item['time'] = response.url
                 type_name = (type_name if len(td_list[0])==2 else td_list[0][:2])
                 item['productname'] = type_name
                 item['deliverymonth'] = td_list[0]
