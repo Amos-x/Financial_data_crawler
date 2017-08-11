@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import time
+try:
+    from Data.settings import START_DATE
+except:
+    START_DATE=None
 from Data.items import DataItem
 
 
@@ -13,7 +17,10 @@ class ExbxgSpider(scrapy.Spider):
 
     def start_requests(self):
         """初始时间为：2011-01-01 16：00：00  """
-        start_time = 1293811200.0 +57600
+        if START_DATE:
+            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
+        else:
+            start_time = 1293811200.0 +57600
         while start_time < self.today_time:
             date_time = time.strftime('%Y-%m-%d', time.localtime(start_time))
             yield scrapy.Request(self.url.format(date=date_time),callback=self.parse,meta={'time':start_time})

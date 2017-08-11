@@ -2,6 +2,10 @@
 import scrapy
 import json
 import time
+try:
+    from Data.settings import START_DATE
+except:
+    START_DATE = None
 from Data.items import DataItem
 
 
@@ -14,7 +18,10 @@ class ShfeSpider(scrapy.Spider):
 
     def start_requests(self):
         """初始时间为：2002-01-07 16：00：00 """
-        start_time = 1010332800.0 + 57600
+        if START_DATE:
+            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
+        else:
+            start_time = 1010332800.0 + 57600
         while start_time < self.today_time:
             yield scrapy.Request(self.url.format(date=time.strftime('%Y%m%d',time.localtime(start_time))),
                                  callback=self.parse,meta={'time':start_time})

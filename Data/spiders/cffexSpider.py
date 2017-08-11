@@ -4,6 +4,10 @@ import time
 from xml.etree import ElementTree as ET
 from Data.items import DataItem
 import math
+try:
+    from Data.settings import START_DATE
+except:
+    START_DATE=None
 
 class CffexSpider(scrapy.Spider):
     name = 'cffexSpider'
@@ -17,7 +21,10 @@ class CffexSpider(scrapy.Spider):
         设置初始爬取时间为 2010-01-01 16:00:00 ,以天为单位循环
         这里用的时间戳
         """
-        start_time = 1262275200.0 + 57600
+        if START_DATE:
+            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
+        else:
+            start_time = 1262275200.0 + 57600
         while start_time < self.today_time:
             year = time.strftime('%Y', time.localtime(start_time))
             month = time.strftime('%m', time.localtime(start_time))

@@ -90,7 +90,7 @@ class Save_to_mysql(object):
                 self.client.commit()
             except:
                 self.error += 1
-        ## 目前czce这个网站还没OK。
+
         if item['web_name'] == 'czce':
             try:
                 sql = 'insert into czce values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
@@ -100,8 +100,7 @@ class Save_to_mysql(object):
                                          item['openinterest'],item['openinterestchg'],item['turnover'],item['deliveryprice']))
                 self.client.commit()
             except:
-                print(item)
-                print('czce,数据库插入错误')
+                self.error += 1
         return item
 
 

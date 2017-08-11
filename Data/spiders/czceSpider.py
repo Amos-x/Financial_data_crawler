@@ -4,6 +4,10 @@ import time
 from bs4 import BeautifulSoup
 from Data.items import DataItem
 import re
+try:
+    from Data.settings import START_DATE
+except:
+    START_DATE=None
 
 class CzcespiderSpider(scrapy.Spider):
     name = 'czceSpider'
@@ -14,7 +18,10 @@ class CzcespiderSpider(scrapy.Spider):
     custom_settings = {'DOWNLOADER_MIDDLEWARES': {'Data.middlewares.SeleniumMiddleware': 1}}
 
     def start_requests(self):
-        start_time = 1388678400.0 + 57600  #1072886400.0 + 57600
+        if START_DATE:
+            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
+        else:
+            start_time = 1388678400.0 + 57600  #1072886400.0 + 57600
         while start_time < self.today_time:
             datetime = time.strftime('%Y-%m-%d',time.localtime(start_time))
             yield scrapy.Request(self.url+datetime,meta={'time':datetime},callback=self.html_parse)

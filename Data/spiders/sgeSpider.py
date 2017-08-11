@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 #from urllib.parse import urljoin
-
+import time
 import scrapy
 from Data.items import DataItem
 from urllib.request import urljoin
 import re
 from bs4 import BeautifulSoup
+try:
+    from Data.settings import START_DATE
+except:
+    START_DATE = None
 
 class SgeSpider(scrapy.Spider):
     name = 'sgeSpider'
@@ -14,7 +18,10 @@ class SgeSpider(scrapy.Spider):
 
     def start_requests(self):
         """请求日统计数据 第一页"""
-        yield scrapy.Request('http://www.sge.com.cn/sjzx/mrhqsj',callback=self.first_parse)
+        if START_DATE:
+            yield scrapy.Request('http://www.sge.com.cn/sjzx/mrhqsj', callback=self.next_parse, dont_filter=True,meta={'page': 1})
+        else:
+            yield scrapy.Request('http://www.sge.com.cn/sjzx/mrhqsj',callback=self.first_parse,dont_filter=True)
 
     def first_parse(self, response):
         """获取数据总页数，并循环请求每个页面"""
@@ -24,9 +31,21 @@ class SgeSpider(scrapy.Spider):
 
     def next_parse(self,response):
         """获取页面的 内容链接 列表"""
-        urls = response.css('div.articleList ul li.lh45 a::attr(href)').extract()
-        for url in urls:
-            yield scrapy.Request(urljoin(response.url,url),callback=self.last_parse)
+        if START_DATE:
+            li_list = response.css('div.articleList ul li')
+            for group in li_list:
+                datetime = group.css('a span.fr::text').extract_first()
+                if time.mktime(time.strptime(datetime,'%Y-%m-%d')) < time.mktime(time.strptime(START_DATE,'%Y-%m-%d')):
+                    break
+                url = group.css('a::attr(href)').extract_first()
+                yield scrapy.Request(urljoin(response.url,url),callback=self.last_parse)
+            lastdate = li_list[-1].css('a span.fr::text').extract_first()
+            if time.mktime(time.strptime(lastdate, '%Y-%m-%d')) > time.mktime(time.strptime(START_DATE,'%Y-%m-%d')):
+                yield scrapy.Request(self.url.format(page=response.meta['page']+1),callback=self.next_parse,meta={'page':response.meta['page']+1})
+        else:
+            urls = response.css('div.articleList ul li.lh45 a::attr(href)').extract()
+            for url in urls:
+                yield scrapy.Request(urljoin(response.url,url),callback=self.last_parse)
 
     def last_parse(self, response):
         """解析网页获取数据"""

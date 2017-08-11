@@ -3,6 +3,10 @@ import time
 import scrapy
 from Data.items import DataItem
 import re
+try:
+    from Data.settings import START_DATE
+except:
+    START_DATE=None
 
 
 class DecspiderSpider(scrapy.Spider):
@@ -13,7 +17,10 @@ class DecspiderSpider(scrapy.Spider):
 
     def start_requests(self):
         """初始爬去时间为 2003-01-02 16:00:00 """
-        start_time = 1041436800.0 + 57600
+        if START_DATE:
+            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
+        else:
+            start_time = 1041436800.0 + 57600
         while start_time < self.today_time:
             year = time.strftime('%Y', time.localtime(start_time))
             month = str(int(time.strftime('%m', time.localtime(start_time)).strip('0')) -1)
