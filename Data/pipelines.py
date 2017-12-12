@@ -101,6 +101,13 @@ class Save_to_mysql(object):
                 self.client.commit()
             except:
                 self.error += 1
+
+        if item['web_name'] == 'lingtong':
+            sql = 'insert into lingtong values(%s,%s,%s,%s,%s,%s,%s,%s)'
+            self.cursor.execute(sql,(item['area'],item['metal'],item['date'],item['name'],item['min_price'],
+                                 item['max_price'],item['mid_price'],item['rise_fall']))
+            self.client.commit()
+
         return item
 
 

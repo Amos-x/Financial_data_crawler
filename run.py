@@ -20,7 +20,7 @@ class scheduler(object):
 
     @staticmethod
     def crawl():
-        os.system('scrapy crawl czceSpider')
+        os.system('scrapy crawl lingtong')
 
     def run(self):
         names = locals()

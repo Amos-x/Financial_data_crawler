@@ -47,3 +47,14 @@ class DataItem(scrapy.Item):
     turnover = scrapy.Field()              # 成交额
 
     averageprice = scrapy.Field()          # 均价
+
+class LingtongItem(scrapy.Item):
+    web_name = scrapy.Field()       ## 网站名
+    area = scrapy.Field()           ## 地区
+    metal = scrapy.Field()          ## 金属
+    date = scrapy.Field()           ## 日期
+    name = scrapy.Field()           ## 品种名称
+    min_price = scrapy.Field()      ## 最低价
+    max_price = scrapy.Field()      ## 最高价
+    mid_price = scrapy.Field()      ## 中间价
+    rise_fall = scrapy.Field()      ## 升跌
