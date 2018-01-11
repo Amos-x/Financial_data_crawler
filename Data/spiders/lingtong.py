@@ -29,7 +29,6 @@ class LingtongSpider(scrapy.Spider):
                     weekday = time.localtime(start_time).tm_wday
                     if weekday < 5:
                         check_time = time.strftime('%Y-%m-%d',time.localtime(start_time))
-                        print(area, ' ', metal_type, ' ',check_time)
                         check_url = 'http://www.lingtong.info/gb/price.asp?classroot=%s&datew=%s' %(classroot,check_time)
                         yield scrapy.Request(check_url,callback=self.page_parse,meta={'area':area,'metal_type':metal_type,'date':check_time})
                     start_time += 86400

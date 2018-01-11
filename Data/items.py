@@ -58,3 +58,13 @@ class LingtongItem(scrapy.Item):
     max_price = scrapy.Field()      ## 最高价
     mid_price = scrapy.Field()      ## 中间价
     rise_fall = scrapy.Field()      ## 升跌
+
+class ChangjiangXHItem(scrapy.Item):
+    web_name = scrapy.Field()
+    date = scrapy.Field()
+    name = scrapy.Field()
+    min_price = scrapy.Field()
+    max_price = scrapy.Field()
+    aver_price = scrapy.Field()
+    rise_fall = scrapy.Field()
+    unit = scrapy.Field()
