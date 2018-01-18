@@ -68,3 +68,13 @@ class ChangjiangXHItem(scrapy.Item):
     aver_price = scrapy.Field()
     rise_fall = scrapy.Field()
     unit = scrapy.Field()
+
+
+class CnalItem(scrapy.Item):
+    web_name = scrapy.Field()
+    name = scrapy.Field()
+    min_price = scrapy.Field()
+    max_price = scrapy.Field()
+    aver_price = scrapy.Field()
+    rise_fall = scrapy.Field()
+    date = scrapy.Field()

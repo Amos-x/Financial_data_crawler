@@ -16,8 +16,8 @@ class CcmnSpider(scrapy.Spider):
     def parse(self, response):
         result = response.css('div#list_elem table tr')[1:]
         if result:
-            item = ChangjiangXHItem()
             for group in result:
+                item = ChangjiangXHItem()
                 items = [x.strip() for x in group.css('td ::text').extract() if x.strip()]
                 item['web_name'] = 'ccmn'
                 item['date'] = '%s-%s' %(self.year,items[6])
@@ -27,6 +27,3 @@ class CcmnSpider(scrapy.Spider):
                 item['unit'] = items[5]
                 item['min_price'],item['max_price'] = items[2].split('—')
                 yield item
-
-if __name__ == '__main__':
-    pass

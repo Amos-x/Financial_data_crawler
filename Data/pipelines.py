@@ -57,7 +57,6 @@ class Save_to_mysql(object):
             except:
                 self.error +=1
 
-
         if item['web_name'] == 'exbxg':
             try:
                 sql = 'insert into exbxg values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
@@ -112,6 +111,12 @@ class Save_to_mysql(object):
             sql = 'insert into ccmn values(%s,%s,%s,%s,%s,%s,%s)'
             self.cursor.execute(sql,(item['date'],item['name'],item['min_price'],item['max_price'],
                                      item['aver_price'],item['rise_fall'],item['unit']))
+            self.client.commit()
+
+        if item['web_name'] == 'cnal':
+            sql = 'insert into cnal values(%s,%s,%s,%s,%s,%s)'
+            self.cursor.execute(sql,(item['date'],item['name'],item['min_price'],item['max_price'],
+                                     item['aver_price'],item['rise_fall']))
             self.client.commit()
 
         return item
