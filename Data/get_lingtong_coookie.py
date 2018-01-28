@@ -52,9 +52,11 @@ class GetLingTongCookie(object):
             }
             response2 = requests.post(url_login, data=data, headers=headers)
             self.cookie = response['cookie']
-            print('获取cookie函数，得到的cookie：',response['cookie'],self.cookie)
+            print('获取cookie函数，得到的cookie：',self.cookie)
             with open(self.path,'w') as f:
                 f.write(str(self.cookie))
             print('写入文件完成')
+            return self.cookie
         else:
+            print('验证码识别失败，重新登陆')
             self.get_cookie()

@@ -14,6 +14,7 @@ from scrapy.http import HtmlResponse
 import requests
 from bs4 import BeautifulSoup
 import re
+from Data.get_lingtong_coookie import GetLingTongCookie
 
 class DataSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -94,23 +95,18 @@ class LonglongLoginMiddleware(object):
         self.path = 'C:\\Users\Amos\PycharmProjects\Data\Data\lingtong_cookie'
         with open(self.path) as f:
             content = f.read()
-            self.cookie = eval(content)
+            cookie = eval(content)
+        params = {'datew': time.strftime('%Y-%m-%d', time.localtime(time.time()))}
+        response = requests.get('http://lingtong.info/gb/price.asp',cookies=cookie, params=params)
+        if 'Set-Cookie' in list(response.headers.keys()):
+            print('cookie失效')
+            # self.cookie = GetLingTongCookie().get_cookie()
+        else:
+            self.cookie = cookie
 
     def process_request(self,request,spider):
         request.cookies = self.cookie
 
-    # def process_response(self,request,response,spider):
-    #     if response.status == 500:
-    #         if self.cookie == request.cookies:
-    #             self.cookie = {'das':'dsa'}
-    #             self.get_cookie()
-            # print('cookie失效，重新开始')
-            # print('cookie:',request.cookies)
-            # print(request.url)
-            # new_request = request.copy()
-            # new_request.dont_filter = True
-            # return new_request
-        # else:
-        #     return response
 
-
+if __name__ == '__main__':
+    a = LonglongLoginMiddleware()

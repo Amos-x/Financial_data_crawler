@@ -30,7 +30,7 @@ LOG_LEVEL = 'INFO'
 DOWNLOAD_TIMEOUT = 30
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -42,11 +42,11 @@ CONCURRENT_REQUESTS = 32
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 0.25
+# DOWNLOAD_DELAY = 0.2
 # The download delay setting will honor only one of:
 # 同域名最大并发请求数限制
-CONCURRENT_REQUESTS_PER_DOMAIN = 10000
-#CONCURRENT_REQUESTS_PER_IP = 16
+# CONCURRENT_REQUESTS_PER_DOMAIN = 10000
+CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -109,17 +109,17 @@ ITEM_PIPELINES = {
 
 # 分布式框架，需要安装redis数据库，和scrapy-redis库，启用后，可进行分布式抓取，提高效率
 
-# SCHEDULER = "scrapy_redis.scheduler.Scheduler"
-# DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 
 # redis 数据库连接信息，根据自己的数据库来修改
-# REDIS_URL = 'redis://DESKTOP-V9EPT1L:wyx379833553@localhost:6379'
+REDIS_URL = 'redis://DESKTOP-V9EPT1L:wyx379833553@localhost:6379'
 
 # 是否保存爬取中产生的 指纹和请求， 启动后，会自动去重，如何请求队列内有请求的话，会继续之前的抓取
-# SCHEDULER_PERSIST = True
+SCHEDULER_PERSIST = True
 
 # 如果请求队列没有请求，解决有时请求生成数据小于爬取速度时有可能出现的结束问题，最大等待时间 单位秒
-# SCHEDULER_IDLE_BEFORE_CLOSE = 30
+SCHEDULER_IDLE_BEFORE_CLOSE = 30
 
 # 单机多进程启动进程数， 最好不要大于自身cpu核心数。
-# CORE_NUMBER = 4
+CORE_NUMBER = 3
