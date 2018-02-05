@@ -7,21 +7,29 @@ import json
 
 class CnalSpider(scrapy.Spider):
     name = 'cnal'
-    is_history = False
+    is_history = True
 
     def start_requests(self):
-        self.today = datetime.datetime.today()
-        if self.is_history:
-            url = 'https://market.cnal.com/historical/search.html'
-            start_time = self.today - datetime.timedelta(days=30)
-            yield scrapy.FormRequest(url,callback=self.parse,dont_filter=True,formdata={
-                'starttime': start_time.strftime('%Y-%m-%d'),
-                'endtime': self.today.strftime('%Y-%m-%d'),
-                'selectid': '25',
-            })
-        else:
-            url = 'https://market.cnal.com/api/php/index.php?m=market&a=GetNewJson'
-            yield scrapy.Request(url,callback=self.parse,dont_filter=True)
+        yield scrapy.Request('https://market.cnal.com/share/market/sme30.json',callback=self.next_parse)
+
+    def next_parse(self,response):
+        selectid = False
+        for key,value in json.loads(response.text)['name'].items():
+            if value == '铝':
+                selectid = key
+        if selectid:
+            self.today = datetime.datetime.today()
+            if self.is_history:
+                url = 'https://market.cnal.com/historical/search.html'
+                start_time = self.today - datetime.timedelta(days=30)
+                yield scrapy.FormRequest(url,callback=self.parse,dont_filter=True,formdata={
+                    'starttime': start_time.strftime('%Y-%m-%d'),
+                    'endtime': self.today.strftime('%Y-%m-%d'),
+                    'selectid': selectid,
+                })
+            else:
+                url = 'https://market.cnal.com/api/php/index.php?m=market&a=GetNewJson'
+                yield scrapy.Request(url,callback=self.parse,dont_filter=True,meta={'selectid':selectid})
 
     def parse(self, response):
         if self.is_history:
@@ -39,7 +47,7 @@ class CnalSpider(scrapy.Spider):
                 yield item
 
         else:
-            result = json.loads(response.text)['spot']['25']
+            result = json.loads(response.text)['spot'][response.meta['selectid']]
             item = CnalItem()
             item['web_name'] = 'cnal'
             item['name'] = 'A00铝'

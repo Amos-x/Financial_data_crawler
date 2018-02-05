@@ -100,7 +100,7 @@ class LonglongLoginMiddleware(object):
         response = requests.get('http://lingtong.info/gb/price.asp',cookies=cookie, params=params)
         if 'Set-Cookie' in list(response.headers.keys()):
             print('cookie失效')
-            # self.cookie = GetLingTongCookie().get_cookie()
+            self.cookie = GetLingTongCookie().get_cookie()
         else:
             self.cookie = cookie
 
