@@ -103,23 +103,20 @@ class Save_to_mysql(object):
                 self.error += 1
 
         if item['web_name'] == 'lingtong':
-            ID = str(time.time()).replace('.', '')
-            sql = 'insert into lingtong values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-            self.cursor.execute(sql,(ID,item['area'],item['metal'],item['date'],item['name'],item['min_price'],
+            sql = 'insert into lingtong(area,metal,pub_date,name,min_price,max_price,mid_price,rise_fall,unit) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+            self.cursor.execute(sql,(item['area'],item['metal'],item['date'],item['name'],item['min_price'],
                                  item['max_price'],item['mid_price'],item['rise_fall'],item['unit']))
             self.client.commit()
 
         if item['web_name'] == 'ccmn':
-            sql = 'insert into ccmn values(%s,%s,%s,%s,%s,%s,%s,%s)'
-            ID = str(time.time()).replace('.','')
-            self.cursor.execute(sql,(ID,item['date'],item['name'],item['min_price'],item['max_price'],
+            sql = 'insert into ccmn(pub_date,name,min_price,max_price,aver_price,rise_fall,unit) values(%s,%s,%s,%s,%s,%s,%s)'
+            self.cursor.execute(sql,(item['date'],item['name'],item['min_price'],item['max_price'],
                                      item['aver_price'],item['rise_fall'],item['unit']))
             self.client.commit()
 
         if item['web_name'] == 'cnal':
-            sql = 'insert into cnal values(%s,%s,%s,%s,%s,%s,%s)'
-            ID = str(time.time()).replace('.','')
-            self.cursor.execute(sql,(ID,item['date'],item['name'],item['min_price'],item['max_price'],
+            sql = 'insert into cnal(pub_date,name,min_price,max_price,aver_price,rise_fall) values(%s,%s,%s,%s,%s,%s)'
+            self.cursor.execute(sql,(item['date'],item['name'],item['min_price'],item['max_price'],
                                      item['aver_price'],item['rise_fall']))
             self.client.commit()
 

@@ -50,7 +50,7 @@ class CnalSpider(scrapy.Spider):
             result = json.loads(response.text)['spot'][response.meta['selectid']]
             item = CnalItem()
             item['web_name'] = 'cnal'
-            item['name'] = 'A00铝'
+            item['name'] = '铝'
             item['min_price'] = result.get('min')
             item['max_price'] = result.get('max')
             item['aver_price'] = result.get('average')
