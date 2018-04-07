@@ -60,11 +60,10 @@ class Save_to_mysql(object):
 
         if item['web_name'] == 'exbxg':
             try:
-                sql = 'insert into exbxg values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-                self.cursor.execute(sql,(item['time'],item['productname'],item['deliverymonth'],item['presettlementprice'],
-                                         item['openprice'],item['highestprice'],item['lowestprice'],item['closeprice'],
-                                         item['averageprice'],item['zd1_chg'],item['volume'],item['turnover'],
-                                         item['openinterest'],item['openinterestchg']))
+                sql = 'insert into new_exbxg values (%s,%s,%s,%s,%s,%s)'
+                self.cursor.execute(sql, (item['time'], item['lowNickelCostPrice'], item['highNickelCostPrice'],
+                                          item['stainlessPrice'], item['lowNickelWuxiPrice'],
+                                          item['highNickelWuxiPrice']))
                 self.client.commit()
             except:
                 self.error += 1
@@ -115,9 +114,9 @@ class Save_to_mysql(object):
             self.client.commit()
 
         if item['web_name'] == 'cnal':
-            sql = 'insert into cnal(pub_date,name,min_price,max_price,aver_price,rise_fall) values(%s,%s,%s,%s,%s,%s)'
+            sql = 'insert into cnal(pub_date,name,min_price,max_price,aver_price,rise_fall,unit) values(%s,%s,%s,%s,%s,%s,%s)'
             self.cursor.execute(sql,(item['date'],item['name'],item['min_price'],item['max_price'],
-                                     item['aver_price'],item['rise_fall']))
+                                     item['aver_price'],item['rise_fall'],'元/吨'))
             self.client.commit()
 
         return item

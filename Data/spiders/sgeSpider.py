@@ -6,19 +6,18 @@ from Data.items import DataItem
 from urllib.request import urljoin
 import re
 from bs4 import BeautifulSoup
-try:
-    from Data.settings import START_DATE
-except:
-    START_DATE = None
+from Data.utils import select_update_time
+
 
 class SgeSpider(scrapy.Spider):
     name = 'sgeSpider'
-    url ='http://www.sge.com.cn/sjzx/mrhqsj?p={page}'
+    url = 'http://www.sge.com.cn/sjzx/mrhqsj?p={page}'
     error = 0
+    start_time = select_update_time('sge')
 
     def start_requests(self):
         """请求日统计数据 第一页"""
-        if START_DATE:
+        if self.start_time:
             yield scrapy.Request('http://www.sge.com.cn/sjzx/mrhqsj', callback=self.next_parse, dont_filter=True,meta={'page': 1})
         else:
             yield scrapy.Request('http://www.sge.com.cn/sjzx/mrhqsj',callback=self.first_parse,dont_filter=True)
@@ -31,16 +30,16 @@ class SgeSpider(scrapy.Spider):
 
     def next_parse(self,response):
         """获取页面的 内容链接 列表"""
-        if START_DATE:
+        if self.start_time:
             li_list = response.css('div.articleList ul li')
             for group in li_list:
                 datetime = group.css('a span.fr::text').extract_first()
-                if time.mktime(time.strptime(datetime,'%Y-%m-%d')) < time.mktime(time.strptime(START_DATE,'%Y-%m-%d')):
+                if time.mktime(time.strptime(datetime,'%Y-%m-%d')) <= self.start_time:
                     break
                 url = group.css('a::attr(href)').extract_first()
                 yield scrapy.Request(urljoin(response.url,url),callback=self.last_parse)
             lastdate = li_list[-1].css('a span.fr::text').extract_first()
-            if time.mktime(time.strptime(lastdate, '%Y-%m-%d')) > time.mktime(time.strptime(START_DATE,'%Y-%m-%d')):
+            if time.mktime(time.strptime(lastdate, '%Y-%m-%d')) > self.start_time:
                 yield scrapy.Request(self.url.format(page=response.meta['page']+1),callback=self.next_parse,meta={'page':response.meta['page']+1})
         else:
             urls = response.css('div.articleList ul li.lh45 a::attr(href)').extract()

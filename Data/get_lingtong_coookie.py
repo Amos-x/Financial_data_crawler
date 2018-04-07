@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+
 class GetLingTongCookie(object):
     def __init__(self):
         self.path = 'C:\\Users\Amos\PycharmProjects\Data\Data\lingtong_cookie'
@@ -24,7 +25,7 @@ class GetLingTongCookie(object):
             'challenge': challenge,
             'referer': 'http://lingtong.info',
             'return': 'json',
-            'model': ''
+            'model': '',
         }
 
         url_jiyan = 'http://jiyanapi.c2567.com/shibie'

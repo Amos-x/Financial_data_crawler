@@ -4,10 +4,8 @@ import time
 from xml.etree import ElementTree as ET
 from Data.items import DataItem
 import math
-try:
-    from Data.settings import START_DATE
-except:
-    START_DATE=None
+from Data.utils import select_update_time
+
 
 class CffexSpider(scrapy.Spider):
     name = 'cffexSpider'
@@ -21,16 +19,15 @@ class CffexSpider(scrapy.Spider):
         设置初始爬取时间为 2010-01-01 16:00:00 ,以天为单位循环
         这里用的时间戳
         """
-        if START_DATE:
-            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
-        else:
-            start_time = 1262275200.0 + 57600
+        start_time = select_update_time('cffex') + 57600
+
         while start_time < self.today_time:
+            start_time += 86400
             year = time.strftime('%Y', time.localtime(start_time))
             month = time.strftime('%m', time.localtime(start_time))
             day = time.strftime('%d', time.localtime(start_time))
             yield scrapy.Request(self.url.format(yearmonth=year+month,day=day),callback=self.parse,meta={'time':start_time})
-            start_time += 86400
+
 
     def parse(self, response):
         """判断请求当天是否有数据，并进行解析"""

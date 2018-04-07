@@ -21,10 +21,18 @@ MYSQL_USERNAME = 'root'
 MYSQL_PASSWORD = 'wyx379833553'
 MYSQL_DB_NAME = 'tianyi'
 
-# 开始时间设置，格式为 xxxx-xx-xx。注释掉则从头全部抓取
-START_DATE = '2017-08-07'
 
 LOG_LEVEL = 'INFO'
+
+# 网站抓取数据的最初时间，默认不需要改变,格式： 表名：时间
+INIT_TIME = {
+   'cffex': '2010-01-01',
+   'czce': '2014-01-03',
+   'dec': '2003-01-02',
+   'new_exbxg': None,
+   'sge': None,
+   'shfe': '2002-01-07',
+}
 
 # 下载超时时间 单位秒
 DOWNLOAD_TIMEOUT = 30

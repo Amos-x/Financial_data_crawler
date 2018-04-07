@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 import re
 from Data.get_lingtong_coookie import GetLingTongCookie
 
+
 class DataSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
@@ -64,28 +65,6 @@ class DataSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class SeleniumMiddleware(object):
-    """一个selenium中间件，用浏览器代替下载器进行请求，并返回html"""
-
-    def __init__(self):
-        self.browser = webdriver.Chrome()
-        self.wait = WebDriverWait(self.browser, 20)
-        self.browser.get('http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm')
-        self.input_window = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'table tbody input#pubDate')))
-        self.button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'table tbody img#button')))
-
-    def process_request(self,request,spider):
-        datetime = request.meta['time']
-        self.input_window.clear()
-        self.input_window.send_keys(datetime)
-        self.button.click()
-        self.browser.switch_to_window(self.browser.window_handles[-1])
-        html = self.browser.page_source
-        self.browser.close()
-        self.browser.switch_to_window(self.browser.window_handles[0])
-        return HtmlResponse(self.browser.current_url,body=html,encoding='utf-8')
-
-
 class LonglongLoginMiddleware(object):
     """
     用于灵通金属报价网站的登陆，获取cookie，并保存，知道cookie失效再次重新获取。
@@ -98,15 +77,12 @@ class LonglongLoginMiddleware(object):
             cookie = eval(content)
         params = {'datew': time.strftime('%Y-%m-%d', time.localtime(time.time()))}
         response = requests.get('http://lingtong.info/gb/price.asp',cookies=cookie, params=params)
-        if 'Set-Cookie' in list(response.headers.keys()):
+        if response.status_code == '500':
             print('cookie失效')
             self.cookie = GetLingTongCookie().get_cookie()
         else:
+            print('cookie有效')
             self.cookie = cookie
 
     def process_request(self,request,spider):
         request.cookies = self.cookie
-
-
-if __name__ == '__main__':
-    a = LonglongLoginMiddleware()

@@ -1,44 +1,41 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import time
-from bs4 import BeautifulSoup
 from Data.items import DataItem
 import re
-try:
-    from Data.settings import START_DATE
-except:
-    START_DATE=None
+from Data.utils import select_update_time
+
 
 class CzcespiderSpider(scrapy.Spider):
     name = 'czceSpider'
-    # allowed_domains = ['www.czce.com.cn']
-    # start_urls = ['http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm']
-    url = 'http://www.czce.com.cn/portal/jysj/qhjysj/mrhq/A09112001index_1.htm/'
+    url = 'http://www.czce.com.cn/cms/cmsface/czce/exchangefront/calendarnewquery.jsp'
     today_time = time.time()
-    custom_settings = {'DOWNLOADER_MIDDLEWARES': {'Data.middlewares.SeleniumMiddleware': 1}}
 
     def start_requests(self):
-        if START_DATE:
-            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
-        else:
-            start_time = 1388678400.0 + 57600  #1072886400.0 + 57600
+        start_time = select_update_time('czce') +57600
         while start_time < self.today_time:
-            datetime = time.strftime('%Y-%m-%d',time.localtime(start_time))
-            yield scrapy.Request(self.url+datetime,meta={'time':datetime},callback=self.html_parse)
             start_time += 86400
+            datetime = time.strftime('%Y-%m-%d',time.localtime(start_time))
+            data = {"dataType": "DAILY",
+                    "pubDate": datetime,
+                    'commodity': '', }
+            yield scrapy.FormRequest(self.url,formdata=data,meta={'time':datetime},callback=self.html_parse)
 
     def html_parse(self,response):
-        soup = BeautifulSoup(response.text,'lxml')
-        tr_list = soup.select('table')[-1].select('tr')
-        if len(tr_list)>1:
+        tr_list = response.css('table#senfe.table tr')[1:-1]
+        if tr_list:
             item = DataItem()
             type_name =''
             for tr in tr_list[1:]:
-                td_list = [td.get_text().strip() for td in tr.select('td')]
-                item['time'] = response.url
-                type_name = (type_name if len(td_list[0])==2 else td_list[0][:2])
-                item['productname'] = type_name
+                td_list = [x.strip() for x in tr.css('td::text').extract()]
+                item['time'] = response.meta['time']
                 item['deliverymonth'] = td_list[0]
+                if len(td_list[0]) == 4:
+                    type_name = type_name
+                    item['deliverymonth'] = type_name
+                else:
+                    type_name = td_list[0][:2]
+                item['productname'] = type_name
                 item['presettlementprice'] = (None if not td_list[1] else re.sub(r',','',td_list[1]))
                 item['openprice'] = (None if not td_list[2] else re.sub(r',','',td_list[2]))
                 item['highestprice'] = (None if not td_list[3] else re.sub(r',','',td_list[3]))

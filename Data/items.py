@@ -48,6 +48,17 @@ class DataItem(scrapy.Item):
 
     averageprice = scrapy.Field()          # 均价
 
+
+class ExbxgItem(scrapy.Item):
+    web_name = scrapy.Field()               # web名
+    time = scrapy.Field()                   # 时间
+    lowNickelCostPrice = scrapy.Field()     # 低镍铁成本价格
+    highNickelCostPrice = scrapy.Field()    # 高镍铁成本价格
+    stainlessPrice = scrapy.Field()         # 无锡不锈钢指数价格
+    lowNickelWuxiPrice = scrapy.Field()     # 低镍铁成本和无锡价差
+    highNickelWuxiPrice = scrapy.Field()    # 高镍铁成本和无锡价差
+
+
 class LingtongItem(scrapy.Item):
     web_name = scrapy.Field()       ## 网站名
     area = scrapy.Field()           ## 地区
@@ -59,6 +70,7 @@ class LingtongItem(scrapy.Item):
     mid_price = scrapy.Field()      ## 中间价
     rise_fall = scrapy.Field()      ## 升跌
     unit = scrapy.Field()           ## 单位
+
 
 class ChangjiangXHItem(scrapy.Item):
     web_name = scrapy.Field()
@@ -79,3 +91,5 @@ class CnalItem(scrapy.Item):
     aver_price = scrapy.Field()
     rise_fall = scrapy.Field()
     date = scrapy.Field()
+
+

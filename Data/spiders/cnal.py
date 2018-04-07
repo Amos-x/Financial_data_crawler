@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import datetime
+import time
 from Data.items import CnalItem
 import json
 
@@ -55,5 +56,5 @@ class CnalSpider(scrapy.Spider):
             item['max_price'] = result.get('max')
             item['aver_price'] = result.get('average')
             item['rise_fall'] = result.get('move')
-            item['date'] = self.today.strftime('%Y-%m-%d')
+            item['date'] = time.strftime("%Y-%m-%d",time.localtime(int(result.get('createtime'))))
             yield item

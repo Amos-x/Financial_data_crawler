@@ -10,6 +10,9 @@ from Data.spiders.decSpider import DecspiderSpider
 from Data.spiders.exbxgSpider import ExbxgSpider
 from Data.spiders.sgeSpider import SgeSpider
 from Data.spiders.shfeSpider import ShfeSpider
+from Data.spiders.czceSpider import CzcespiderSpider
+from Data.spiders.ccmn import CcmnSpider
+from Data.spiders.cnal import CnalSpider
 import time
 
 
@@ -33,7 +36,27 @@ class scheduler(object):
                 names['process%x' % x].start()
 
 
+# 单机单进程爬去启动类
+class scheduler02(object):
+
+    def run(self):
+        process = CrawlerProcess()
+        process.crawl(CffexSpider)
+        process.crawl(DecspiderSpider)
+        process.crawl(ExbxgSpider)
+        process.crawl(SgeSpider)
+        process.crawl(ShfeSpider)
+        process.crawl(CzcespiderSpider)
+        process.crawl(CcmnSpider)
+        process.crawl(CnalSpider)
+        process.start()
+
+
 if __name__ == '__main__':
     # 单机多进程分布爬取
-    r = scheduler()
-    r.run()
+    # r = scheduler()
+    # r.run()
+
+    # 这里用单机单进程爬取
+    s = scheduler02()
+    s.run()

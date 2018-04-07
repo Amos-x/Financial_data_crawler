@@ -2,11 +2,8 @@
 import scrapy
 import json
 import time
-try:
-    from Data.settings import START_DATE
-except:
-    START_DATE = None
 from Data.items import DataItem
+from Data.utils import select_update_time
 
 
 class ShfeSpider(scrapy.Spider):
@@ -18,15 +15,11 @@ class ShfeSpider(scrapy.Spider):
 
     def start_requests(self):
         """初始时间为：2002-01-07 16：00：00 """
-        if START_DATE:
-            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
-        else:
-            start_time = 1010332800.0 + 57600
+        start_time = select_update_time('shfe') + 57600
         while start_time < self.today_time:
+            start_time += 86400
             yield scrapy.Request(self.url.format(date=time.strftime('%Y%m%d',time.localtime(start_time))),
                                  callback=self.parse,meta={'time':start_time})
-            start_time += 86400
-
 
     def parse(self, response):
         """判断当天是否有数据 并解析提取数据"""

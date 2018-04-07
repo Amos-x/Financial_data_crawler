@@ -3,32 +3,25 @@ import time
 import scrapy
 from Data.items import DataItem
 import re
-try:
-    from Data.settings import START_DATE
-except:
-    START_DATE=None
+from Data.utils import select_update_time
 
 
 class DecspiderSpider(scrapy.Spider):
     name = "decSpider"
-    custom_settings = {'DOWNLOAD_DELAY':'0.1'}
+    custom_settings = {'DOWNLOAD_DELAY':'0.2'}
     url = "http://www.dce.com.cn/publicweb/quotesdata/dayQuotesCh.html"
     today_time = time.time()
 
     def start_requests(self):
         """初始爬去时间为 2003-01-02 16:00:00 """
-        if START_DATE:
-            start_time = time.mktime(time.strptime(START_DATE,'%Y-%m-%d')) + 57600
-        else:
-            start_time = 1041436800.0 + 57600
+        start_time = select_update_time('dec') + 57600
         while start_time < self.today_time:
+            start_time += 86400
             year = time.strftime('%Y', time.localtime(start_time))
             month = str(int(time.strftime('%m', time.localtime(start_time)).strip('0')) -1)
             day = time.strftime('%d', time.localtime(start_time))
             yield scrapy.FormRequest(self.url,formdata={"dayQuotes.variety": "all", "dayQuotes.trade_type": "0",
                                         "year" : year,"month" : month,"day" : day},callback=self.parse,meta={'time':start_time})
-            start_time += 86400
-
 
     def parse(self, response):
         """判断并解析获取数据"""
@@ -59,6 +52,5 @@ class DecspiderSpider(scrapy.Spider):
                     item['turnover'] = re.sub(r',','',tdList[13])
                     item['web_name'] = 'dec'
                     yield item
-
 
 

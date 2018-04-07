@@ -13,8 +13,8 @@ class LingtongSpider(scrapy.Spider):
         'DOWNLOADER_MIDDLEWARES': {'Data.middlewares.LonglongLoginMiddleware': 1}
     }
     today_time = time.time()
-    START_DATE = '2007-01-04'
-    is_history = True
+    START_DATE = '2018-02-05'
+    is_history = False
 
     def start_requests(self):
         if self.is_history:
@@ -95,10 +95,3 @@ class LingtongSpider(scrapy.Spider):
                         else:
                             item['rise_fall'] = None
                         yield item
-
-
-if __name__ == '__main__':
-    a = '锌（上海地区）\xa0\xa0\xa0\xa0\xa0\xa0单位：'
-    b,c = re.findall('(.*?)（(.*?)）', a)[0]
-    print(b,c)
-
