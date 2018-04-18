@@ -13,10 +13,10 @@ class SgeSpider(scrapy.Spider):
     name = 'sgeSpider'
     url = 'http://www.sge.com.cn/sjzx/mrhqsj?p={page}'
     error = 0
-    start_time = select_update_time('sge')
 
     def start_requests(self):
         """请求日统计数据 第一页"""
+        self.start_time = select_update_time('sge')
         if self.start_time:
             yield scrapy.Request('http://www.sge.com.cn/sjzx/mrhqsj', callback=self.next_parse, dont_filter=True,meta={'page': 1})
         else:

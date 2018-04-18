@@ -2,8 +2,7 @@
 import scrapy
 from Data.items import ChangjiangXHItem
 import datetime
-import requests
-from bs4 import BeautifulSoup
+
 
 class CcmnSpider(scrapy.Spider):
     name = 'ccmn'
@@ -11,7 +10,7 @@ class CcmnSpider(scrapy.Spider):
 
     def start_requests(self):
         url = 'http://www.ccmn.cn/historyprice/cjxh_1/'
-        yield scrapy.Request(url,callback=self.parse,dont_filter=True)
+        yield scrapy.Request(url,callback=self.parse,dont_filter=True,meta={'proxy':'http://119.145.165.118:8888'})
 
     def parse(self, response):
         result = response.css('div#list_elem table tr')[1:]
@@ -27,3 +26,5 @@ class CcmnSpider(scrapy.Spider):
                 item['unit'] = items[5]
                 item['min_price'],item['max_price'] = items[2].split('—')
                 yield item
+        else:
+            print('error-error-error-error-error-error-error-error-error-')

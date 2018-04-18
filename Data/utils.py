@@ -27,8 +27,3 @@ def select_update_time(table_name,field_name='datetime'):
                 raise ValueError('无法查询到时间，配置或输入错误，请检查')
     except:
         raise ValueError('表名错误，表%s不存在' %table_name)
-
-
-if __name__ == '__main__':
-    a = select_update_time('new_xbxg')
-    print(a)

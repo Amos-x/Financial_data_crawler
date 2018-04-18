@@ -19,7 +19,7 @@ MYSQL_HOST = 'localhost'
 MYSQL_PORT = 3306
 MYSQL_USERNAME = 'root'
 MYSQL_PASSWORD = 'wyx379833553'
-MYSQL_DB_NAME = 'tianyi'
+MYSQL_DB_NAME = 'data'
 
 
 LOG_LEVEL = 'INFO'
