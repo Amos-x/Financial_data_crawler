@@ -26,5 +26,3 @@ class CcmnSpider(scrapy.Spider):
                 item['unit'] = items[5]
                 item['min_price'],item['max_price'] = items[2].split('—')
                 yield item
-        else:
-            print('error-error-error-error-error-error-error-error-error-')
