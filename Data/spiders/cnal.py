@@ -12,12 +12,18 @@ class CnalSpider(scrapy.Spider):
 
     def start_requests(self):
         yield scrapy.Request('https://market.cnal.com/share/market/sme30.json',callback=self.next_parse)
+        yield scrapy.Request('https://market.cnal.com/share/market/nc30.json',callback=self.next_parse)
 
     def next_parse(self,response):
         selectid = False
+        select_name = False
         for key,value in json.loads(response.text)['name'].items():
             if value == '铝':
                 selectid = key
+                select_name = '铝'
+            if value == 'A00铝':
+                selectid = key
+                select_name = 'A00铝(南储)'
         if selectid:
             self.today = datetime.datetime.today()
             if self.is_history:
@@ -27,10 +33,10 @@ class CnalSpider(scrapy.Spider):
                     'starttime': start_time.strftime('%Y-%m-%d'),
                     'endtime': self.today.strftime('%Y-%m-%d'),
                     'selectid': selectid,
-                })
+                },meta={'selectid':selectid,'select_name':select_name})
             else:
                 url = 'https://market.cnal.com/api/php/index.php?m=market&a=GetNewJson'
-                yield scrapy.Request(url,callback=self.parse,dont_filter=True,meta={'selectid':selectid})
+                yield scrapy.Request(url,callback=self.parse,dont_filter=True,meta={'selectid':selectid,'select_name':select_name})
 
     def parse(self, response):
         if self.is_history:
@@ -39,19 +45,18 @@ class CnalSpider(scrapy.Spider):
                 item = CnalItem()
                 groups = tr.css('td::text').extract()
                 item['web_name'] = 'cnal'
-                item['name'] = groups[0]
+                item['name'] = response.meta['select_name']
                 item['min_price'] = groups[1]
                 item['max_price'] = groups[2]
                 item['aver_price'] = groups[3]
                 item['rise_fall'] = groups[4]
                 item['date'] = groups[5]
                 yield item
-
         else:
             result = json.loads(response.text)['spot'][response.meta['selectid']]
             item = CnalItem()
             item['web_name'] = 'cnal'
-            item['name'] = '铝'
+            item['name'] = response.meta['select_name']
             item['min_price'] = result.get('min')
             item['max_price'] = result.get('max')
             item['aver_price'] = result.get('average')
