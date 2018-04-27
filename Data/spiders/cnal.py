@@ -11,8 +11,8 @@ class CnalSpider(scrapy.Spider):
     is_history = True
 
     def start_requests(self):
-        yield scrapy.Request('https://market.cnal.com/share/market/sme30.json',callback=self.next_parse)
-        yield scrapy.Request('https://market.cnal.com/share/market/nc30.json',callback=self.next_parse)
+        yield scrapy.Request('https://market.cnal.com/share/market/sme30.json',callback=self.next_parse,dont_filter=True)
+        yield scrapy.Request('https://market.cnal.com/share/market/nc30.json',callback=self.next_parse,dont_filter=True)
 
     def next_parse(self,response):
         selectid = False
