@@ -1,5 +1,5 @@
 PyMySQL==0.8.0
-requests==2.18.4
+requests==2.21.0
 selenium==3.11.0
 Scrapy==1.5.0
 beautifulsoup4==4.6.0
